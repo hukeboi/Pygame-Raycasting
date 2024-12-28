@@ -364,7 +364,7 @@ while running:
     pygame.draw.rect(surface, (120, 120, 120), pygame.Rect(0, 0, width, height / 2))
     pygame.draw.rect(surface, (60, 60, 60), pygame.Rect(0, height / 2, width, height / 2))
 
-    print(PlayerX, PlayerY)
+    #print(PlayerX, PlayerY)
 
     #renderöinti
     currentX = 0

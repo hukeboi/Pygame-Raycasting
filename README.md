@@ -8,7 +8,10 @@ Peliin voi tehdä oman kartan kätevästi mukana tulevalla ```mapmaker.py``` ohj
 3. Paina pygame ikkunan ruksia. Tässä vaiheessa ohjelman pitäisi tulostaa pitkä lista koordinaatteja komentokehoitteeseen.
 4. Kopioi tulostettu lista kokonaisuudessaan!
 5. Avaa ```main.py``` ja poista sieltä muuttuja "walls".
-6. Lisää "walls" mutta liitätkin siihen äsken kopioimasi listan.
+6. Lisää muuttuja "walls" mutta liitätkin sen arvoksi äsken kopioimasi listan.
+
+## Galleria
+![Kuva](kuvat/screenshot.png)
 
 ## Muuta
 Jatkossa varmaan jos jaksan niin poistan pygamen ohjelmasta kokonaan ja koodaan itse myös grafiikan piirtämisen. 

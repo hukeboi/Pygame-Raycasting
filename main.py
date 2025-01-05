@@ -386,8 +386,6 @@ while running:
             if len(rayCastReturn) >= 3:
                 DistanceToTextureStart = rayCastReturn[2]
 
-            rect = pygame.Rect(currentX, 50, width/(80*scale), height * DistanceMult)
-            rect.centery = height / 2
             colorMultCalculated = CalcColorMult(distance)
             color = (0, 0, 0)
             if (len(rayCastReturn) >= 4) and (rayCastReturn[3] == "g"):

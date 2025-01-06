@@ -1,6 +1,6 @@
 from PIL import Image
 
-polku = "wall.png"
+polku = "wall2.png"
 koko = 108
 
 def texture():

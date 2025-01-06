@@ -1,5 +1,6 @@
 import pygame
 import math
+import numpy as np
 
 import textureconvert
 
@@ -301,12 +302,14 @@ def CalcColorMult(distance):
     if mult < 0.5: mult = 0.5
     return mult
 
+surface.fill((0, 0, 0))
 while running:
-    surface.fill((0, 0, 0))
+    newScreen = np.empty(height * width)
     
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             running=False
+
     keys = pygame.key.get_pressed()
     movespeed = speed
     if keys[pygame.K_LSHIFT]:
@@ -365,14 +368,16 @@ while running:
         PlayerY = PlayerY + 0.5 * math.sin((movementAngle + 90) * math.pi / 180)
 
     #lattia ja katto
-    pygame.draw.rect(surface, (120, 120, 120), pygame.Rect(0, 0, width, height / 2))
-    pygame.draw.rect(surface, (60, 60, 60), pygame.Rect(0, height / 2, width, height / 2))
+    #pygame.draw.rect(surface, (120, 120, 120), pygame.Rect(0, 0, width, height / 2))
+    #pygame.draw.rect(surface, (60, 60, 60), pygame.Rect(0, height / 2, width, height / 2))
 
     #print(PlayerX, PlayerY)
 
     #renderöinti
     currentX = 0
     for k in range((-40 + angleOffset) * scale, (40 + angleOffset) * scale, 1):
+        np.append(newScreen, [])
+        print(newScreen)
         i = k / scale
         rayCastReturn = CastARay(PlayerX, PlayerY, i)
         if type(rayCastReturn) != type([]):
@@ -399,38 +404,47 @@ while running:
                     if ambientOcclusionMultiplier <= 0.4: ambientOcclusionMultiplier = 0.4
                 totalMult = colorMultCalculated * ambientOcclusionMultiplier
             
-            pixel_array = pygame.PixelArray(surface)
+            #pixel_array = pygame.PixelArray(surface)
             heightTracker = 0
             #print(abs(int(round((height/2)-((int(round(height * DistanceMult))/2))) - int(round((height/2)+((int(round(height * DistanceMult))/2)))))), int(round(height * DistanceMult)))
-            for p in range(int(round((height/2)-((height * DistanceMult)/2))), int(round((height/2)+((height * DistanceMult)/2))), 1):
-                heightTracker += 1
-                if p > 0 and p < height:
-                    if DistanceToTextureStart != 0:
-                        textleft = textureconvert.koko * DistanceToTextureStart
-                        textleft = int(round(textleft))
+            for p in range(0, height):
+                if p > int(round((height/2)-((height * DistanceMult)/2))) and p < int(round((height/2)+((height * DistanceMult)/2))):
+                    heightTracker += 1
+                    if p > 0 and p < height:
+                        if DistanceToTextureStart != 0:
+                            textleft = textureconvert.koko * DistanceToTextureStart
+                            textleft = int(round(textleft))
 
-                        textTop = heightTracker/(int(round(height * DistanceMult))) * textureconvert.koko
-                        textTop = int(round(textTop))
-                        #print(textTop)
-                        if textTop - 1 > 107: 
-                            textTop = 108
-                        wallR = int(round(texture[textleft - 1][textTop - 1][0] * (totalMult/255)))
-                        wallG = int(round(texture[textleft - 1][textTop - 1][1] * (totalMult/255)))
-                        wallB = int(round(texture[textleft - 1][textTop - 1][2] * (totalMult/255)))
-                        pixel_array[int(currentX):int(currentX) + 8, p:p + 1] = (wallR, wallG, wallB)
-                    else: 
-                        if color != (0, 0, 0):
-                            pixel_array[int(currentX):int(currentX) + 8, p:p + 1] = color
-                        else:
-                            pixel_array[int(currentX):int(currentX) + 8, p:p + 1] = (int(totalMult), int(totalMult), int(totalMult))
-                    #pixel_array[start_x:end_x, start_y:end_y] = my_color
+                            textTop = heightTracker/(int(round(height * DistanceMult))) * textureconvert.koko
+                            textTop = int(round(textTop))
+                            #print(textTop)
+                            if textTop - 1 > 107: 
+                                textTop = 108
+                            wallR = int(round(texture[textleft - 1][textTop - 1][0] * (totalMult/255)))
+                            wallG = int(round(texture[textleft - 1][textTop - 1][1] * (totalMult/255)))
+                            wallB = int(round(texture[textleft - 1][textTop - 1][2] * (totalMult/255)))
+                            newScreen[currentX * height + p] = [wallR, wallG, wallB]
+                        else: 
+                            if color != (0, 0, 0):
+                                newScreen[currentX * height + p] = [color[0], color[1], color[2]]
+                            else:
+                                newScreen[currentX * height + p] = [int(totalMult), int(totalMult), int(totalMult)]
+                        #pixel_array[start_x:end_x, start_y:end_y] = my_color
+                elif p < (height / 2):
+                    newScreen[currentX * height + p] = [60, 60, 60]
+                elif p >= (height / 2):
+                    newScreen[currentX * height + p] = [120, 120, 120]
 
-            pixel_array.close()         
+
             
-        currentX += width/(80*scale)
+            #pixel_array.close()     
+    newScreen = np.reshape(newScreen, (-1, width))    
+    newSurf = pygame.surfarray.make_surface(newScreen)
+    currentX += width/(80*scale)
 
     #surface.blit(update_fps(), (10,0))
     #surface.blit(writeTxt(f"angle: {angleOffset}"), (10,40))
     clock.tick(60)
-
+    #print(newScreen)
+    surface.blit(newSurf, (0, 0))
     pygame.display.flip()
